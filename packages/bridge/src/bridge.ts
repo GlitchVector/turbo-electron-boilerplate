@@ -1,70 +1,43 @@
-import { API_BASE_URL } from "@repo/shared";
-import { isElectron, getEnvironment } from "./environment";
+import { isElectron } from "./environment";
 
 /**
- * Bridge API - Environment-aware abstraction layer
+ * Bridge API - Electron-only abstraction layer
  *
- * When running in Electron: uses IPC to call main process
- * When running in browser: falls back to REST API or console.log
+ * These methods require the desktop app and will throw errors in the browser.
+ * For data operations that work in both environments, use the API directly.
  */
 export const bridge = {
   /**
    * Read a file from the filesystem
+   * @throws Error if not running in Electron
    */
   async readFile(path: string): Promise<string> {
     if (isElectron() && window.electronAPI) {
       return window.electronAPI.readFile(path);
     }
-
-    // Browser fallback - call REST API
-    console.log(`[bridge:${getEnvironment()}] readFile: ${path}`);
-    const response = await fetch(
-      `${API_BASE_URL}/api/fs/read?path=${encodeURIComponent(path)}`
-    );
-    if (!response.ok) {
-      throw new Error(`Failed to read file: ${response.statusText}`);
-    }
-    return response.text();
+    throw new Error("File system access requires the desktop app");
   },
 
   /**
    * Write content to a file
+   * @throws Error if not running in Electron
    */
   async writeFile(path: string, content: string): Promise<void> {
     if (isElectron() && window.electronAPI) {
       return window.electronAPI.writeFile(path, content);
     }
-
-    // Browser fallback - call REST API
-    console.log(`[bridge:${getEnvironment()}] writeFile: ${path}`);
-    const response = await fetch(`${API_BASE_URL}/api/fs/write`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path, content }),
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to write file: ${response.statusText}`);
-    }
+    throw new Error("File system access requires the desktop app");
   },
 
   /**
    * Check if a file exists
+   * @throws Error if not running in Electron
    */
   async fileExists(path: string): Promise<boolean> {
     if (isElectron() && window.electronAPI) {
       return window.electronAPI.fileExists(path);
     }
-
-    // Browser fallback - call REST API
-    console.log(`[bridge:${getEnvironment()}] fileExists: ${path}`);
-    const response = await fetch(
-      `${API_BASE_URL}/api/fs/exists?path=${encodeURIComponent(path)}`
-    );
-    if (!response.ok) {
-      return false;
-    }
-    const data = await response.json();
-    return data.exists;
+    throw new Error("File system access requires the desktop app");
   },
 
   /**
@@ -79,8 +52,7 @@ export const bridge = {
       return window.electronAPI.getAppInfo();
     }
 
-    // Browser fallback
-    console.log(`[bridge:${getEnvironment()}] getAppInfo`);
+    // Browser fallback - return browser info
     return {
       name: "Turbo Electron App",
       version: "0.0.1",
@@ -90,6 +62,7 @@ export const bridge = {
 
   /**
    * Get system path
+   * @throws Error if not running in Electron
    */
   async getPath(
     name: "home" | "appData" | "userData" | "documents" | "downloads" | "desktop"
@@ -97,32 +70,25 @@ export const bridge = {
     if (isElectron() && window.electronAPI) {
       return window.electronAPI.getPath(name);
     }
-
-    // Browser fallback - not available
-    console.log(`[bridge:${getEnvironment()}] getPath: ${name} - not available in browser`);
-    throw new Error(`getPath is not available in browser environment`);
+    throw new Error("System path access requires the desktop app");
   },
 
   /**
-   * Minimize window
+   * Minimize window (no-op in browser)
    */
   minimize(): void {
     if (isElectron() && window.electronAPI) {
       window.electronAPI.minimize();
-      return;
     }
-    console.log(`[bridge:${getEnvironment()}] minimize - not available in browser`);
   },
 
   /**
-   * Maximize window
+   * Maximize window (no-op in browser)
    */
   maximize(): void {
     if (isElectron() && window.electronAPI) {
       window.electronAPI.maximize();
-      return;
     }
-    console.log(`[bridge:${getEnvironment()}] maximize - not available in browser`);
   },
 
   /**
@@ -133,12 +99,12 @@ export const bridge = {
       window.electronAPI.close();
       return;
     }
-    console.log(`[bridge:${getEnvironment()}] close - not available in browser`);
     window.close();
   },
 
   /**
    * Open file dialog
+   * @returns null if not running in Electron
    */
   async openFileDialog(options?: {
     filters?: { name: string; extensions: string[] }[];
@@ -146,27 +112,12 @@ export const bridge = {
     if (isElectron() && window.electronAPI) {
       return window.electronAPI.openFileDialog(options);
     }
-
-    // Browser fallback - use file input
-    console.log(`[bridge:${getEnvironment()}] openFileDialog - using browser file picker`);
-    return new Promise((resolve) => {
-      const input = document.createElement("input");
-      input.type = "file";
-      if (options?.filters) {
-        input.accept = options.filters
-          .flatMap((f) => f.extensions.map((ext) => `.${ext}`))
-          .join(",");
-      }
-      input.onchange = () => {
-        const file = input.files?.[0];
-        resolve(file ? file.name : null);
-      };
-      input.click();
-    });
+    return null;
   },
 
   /**
    * Save file dialog
+   * @returns null if not running in Electron
    */
   async saveFileDialog(options?: {
     defaultPath?: string;
@@ -175,9 +126,6 @@ export const bridge = {
     if (isElectron() && window.electronAPI) {
       return window.electronAPI.saveFileDialog(options);
     }
-
-    // Browser fallback - not available (would need to use download approach)
-    console.log(`[bridge:${getEnvironment()}] saveFileDialog - not available in browser`);
-    return options?.defaultPath || null;
+    return null;
   },
 };

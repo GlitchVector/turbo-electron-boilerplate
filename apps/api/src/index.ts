@@ -1,7 +1,6 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { API_PORT } from "@repo/shared";
-import { fsRoutes } from "./routes/fs";
 import { healthRoutes } from "./routes/health";
 import { dataRoutes } from "./routes/data";
 
@@ -17,7 +16,6 @@ async function start() {
 
   // Register routes
   await fastify.register(healthRoutes, { prefix: "/api" });
-  await fastify.register(fsRoutes, { prefix: "/api/fs" });
   await fastify.register(dataRoutes, { prefix: "/api/data" });
 
   try {

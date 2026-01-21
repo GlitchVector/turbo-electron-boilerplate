@@ -21,7 +21,8 @@ A clean Electron + Next.js monorepo boilerplate with Turborepo.
 ## Key Features
 
 - **Dual-mode operation**: The Next.js app runs standalone in browser OR inside Electron
-- **Bridge pattern**: Unified API that routes to IPC (Electron) or REST API (browser)
+- **Bridge pattern**: Electron-only IPC abstraction for desktop-specific capabilities (file system, native dialogs)
+- **API layer**: Data operations via REST that work in both browser and Electron
 - **Minimal Electron shell**: Main process only handles IPC orchestration
 - **Type-safe IPC**: Single source of truth for channel definitions
 - **Turborepo**: Fast builds with caching and parallel execution
@@ -51,17 +52,22 @@ pnpm --filter @repo/desktop package
 
 ### The Bridge Pattern
 
-The `@repo/bridge` package provides a unified API that detects the environment:
+The `@repo/bridge` package provides Electron-only capabilities. These methods work in the desktop app and throw errors or return null in the browser:
 
 ```typescript
 import { bridge, isElectron } from "@repo/bridge";
 
-// Works in both Electron and browser
+// Electron-only - throws error in browser
 const content = await bridge.readFile("/path/to/file");
+const path = await bridge.getPath("documents");
 
-// In Electron: uses IPC to call main process
-// In browser: calls REST API at /api/fs/read
+// Check environment before using desktop features
+if (isElectron()) {
+  const content = await bridge.readFile("/path/to/file");
+}
 ```
+
+For data operations that work in both environments, use the API directly at `/api/data/...`.
 
 ### IPC Channel Definitions
 

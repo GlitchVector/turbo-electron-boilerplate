@@ -37,21 +37,27 @@ This is an Electron + Next.js monorepo using Turborepo. The key architectural pa
 
 - `apps/desktop` - Electron main process (minimal shell, IPC handlers only)
 - `apps/web` - Next.js frontend (works in browser or Electron)
-- `apps/api` - Fastify REST backend (browser fallback when not in Electron)
-- `packages/bridge` - Environment-aware abstraction layer
+- `apps/api` - Fastify REST backend for data operations (works in browser and Electron)
+- `packages/bridge` - Electron-only IPC abstraction (no browser fallbacks)
 - `packages/shared` - IPC channel definitions, types, constants
 
 ### The Bridge Pattern
 
-The `@repo/bridge` package detects the runtime environment and routes calls appropriately:
+The `@repo/bridge` package provides Electron-only capabilities via IPC. These methods throw errors or return null in the browser:
 
 ```typescript
-import { bridge } from "@repo/bridge";
+import { bridge, isElectron } from "@repo/bridge";
 
-// In Electron: calls main process via IPC
-// In browser: calls REST API at /api/...
+// Electron-only - throws error in browser
 await bridge.readFile("/path/to/file");
+
+// Check environment first for graceful handling
+if (isElectron()) {
+  const content = await bridge.readFile("/path/to/file");
+}
 ```
+
+For data operations that work in both environments, use the API at `apps/api` directly.
 
 ### IPC Flow
 
@@ -81,8 +87,8 @@ When adding new IPC functionality:
 |---------|------|---------|
 | `apps/desktop` | `@repo/desktop` | Electron shell |
 | `apps/web` | `@repo/web` | Next.js frontend |
-| `apps/api` | `@repo/api` | Fastify REST API |
-| `packages/bridge` | `@repo/bridge` | IPC/REST abstraction |
+| `apps/api` | `@repo/api` | Fastify REST API (data operations) |
+| `packages/bridge` | `@repo/bridge` | Electron-only IPC abstraction |
 | `packages/shared` | `@repo/shared` | Shared types/constants |
 
 Filter to specific package: `pnpm --filter @repo/desktop <command>`
