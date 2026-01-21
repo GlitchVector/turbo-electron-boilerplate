@@ -18,7 +18,9 @@ function generateDummyData(count: number) {
       2015 + Math.floor(Math.random() * 10),
       Math.floor(Math.random() * 12),
       Math.floor(Math.random() * 28) + 1
-    ).toISOString().split("T")[0],
+    )
+      .toISOString()
+      .split("T")[0],
     performance: Math.floor(Math.random() * 100),
   }));
 }
@@ -28,7 +30,7 @@ const cachedData = generateDummyData(1000);
 
 export async function dataRoutes(fastify: FastifyInstance) {
   // Get all data
-  fastify.get("/users", async (request, reply) => {
+  fastify.get("/users", async (_request, _reply) => {
     return {
       success: true,
       count: cachedData.length,
@@ -38,8 +40,8 @@ export async function dataRoutes(fastify: FastifyInstance) {
 
   // Get paginated data
   fastify.get<{
-    Querystring: { page?: string; limit?: string }
-  }>("/users/paginated", async (request, reply) => {
+    Querystring: { page?: string; limit?: string };
+  }>("/users/paginated", async (request, _reply) => {
     const page = parseInt(request.query.page || "1", 10);
     const limit = parseInt(request.query.limit || "100", 10);
     const offset = (page - 1) * limit;

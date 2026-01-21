@@ -1,8 +1,8 @@
-import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { API_PORT } from "@repo/shared";
-import { healthRoutes } from "./routes/health";
+import Fastify from "fastify";
 import { dataRoutes } from "./routes/data";
+import { healthRoutes } from "./routes/health";
 
 const fastify = Fastify({
   logger: true,

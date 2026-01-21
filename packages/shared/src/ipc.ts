@@ -31,10 +31,7 @@ export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS];
 // Type-safe IPC handler definitions
 export interface IpcHandlers {
   [IPC_CHANNELS.FS_READ_FILE]: (path: string) => Promise<string>;
-  [IPC_CHANNELS.FS_WRITE_FILE]: (
-    path: string,
-    content: string
-  ) => Promise<void>;
+  [IPC_CHANNELS.FS_WRITE_FILE]: (path: string, content: string) => Promise<void>;
   [IPC_CHANNELS.FS_EXISTS]: (path: string) => Promise<boolean>;
   [IPC_CHANNELS.APP_GET_INFO]: () => Promise<{
     name: string;
@@ -42,13 +39,7 @@ export interface IpcHandlers {
     platform: string;
   }>;
   [IPC_CHANNELS.APP_GET_PATH]: (
-    name:
-      | "home"
-      | "appData"
-      | "userData"
-      | "documents"
-      | "downloads"
-      | "desktop"
+    name: "home" | "appData" | "userData" | "documents" | "downloads" | "desktop"
   ) => Promise<string>;
   [IPC_CHANNELS.WINDOW_MINIMIZE]: () => void;
   [IPC_CHANNELS.WINDOW_MAXIMIZE]: () => void;

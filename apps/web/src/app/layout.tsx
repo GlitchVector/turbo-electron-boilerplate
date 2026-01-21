@@ -6,11 +6,7 @@ export const metadata: Metadata = {
   description: "A clean Electron + Next.js monorepo boilerplate",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>{children}</body>

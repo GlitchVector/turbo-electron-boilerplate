@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { bridge, getEnvironment, isElectron } from "@repo/bridge";
 import { APP_NAME, APP_VERSION } from "@repo/shared";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [environment, setEnvironment] = useState<string>("loading...");
@@ -76,22 +76,20 @@ export default function Home() {
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
             <h2 className="mb-4 text-lg font-semibold">Bridge Demo</h2>
             <p className="mb-4 text-zinc-400">
-              The bridge abstraction detects the environment and routes calls
-              appropriately:
+              The bridge abstraction detects the environment and routes calls appropriately:
             </p>
             <ul className="mb-6 space-y-2 text-sm text-zinc-400">
               <li className="flex items-start gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 <span>
-                  <strong className="text-white">Electron:</strong> Uses IPC to
-                  call main process
+                  <strong className="text-white">Electron:</strong> Uses IPC to call main process
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-500" />
                 <span>
-                  <strong className="text-white">Browser:</strong> Falls back to
-                  REST API or console.log
+                  <strong className="text-white">Browser:</strong> Falls back to REST API or
+                  console.log
                 </span>
               </li>
             </ul>

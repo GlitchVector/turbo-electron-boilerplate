@@ -1,5 +1,5 @@
-import { DataGrid } from "@/components/DataGrid";
 import Link from "next/link";
+import { DataGrid } from "@/components/DataGrid";
 
 export default function DataPage() {
   return (

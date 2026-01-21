@@ -68,6 +68,7 @@ For data operations that work in both environments, use the API at `apps/api` di
 5. **Bridge implementation**: `packages/bridge/src/bridge.ts` provides environment-aware wrappers
 
 When adding new IPC functionality:
+
 1. Add channel to `IPC_CHANNELS` in `packages/shared/src/ipc.ts`
 2. Add handler type to `IpcHandlers` interface in same file
 3. Implement handler in `apps/desktop/src/main.ts`
@@ -83,12 +84,12 @@ When adding new IPC functionality:
 
 ## Workspace Packages
 
-| Package | Name | Purpose |
-|---------|------|---------|
-| `apps/desktop` | `@repo/desktop` | Electron shell |
-| `apps/web` | `@repo/web` | Next.js frontend |
-| `apps/api` | `@repo/api` | Fastify REST API (data operations) |
-| `packages/bridge` | `@repo/bridge` | Electron-only IPC abstraction |
-| `packages/shared` | `@repo/shared` | Shared types/constants |
+| Package           | Name            | Purpose                            |
+| ----------------- | --------------- | ---------------------------------- |
+| `apps/desktop`    | `@repo/desktop` | Electron shell                     |
+| `apps/web`        | `@repo/web`     | Next.js frontend                   |
+| `apps/api`        | `@repo/api`     | Fastify REST API (data operations) |
+| `packages/bridge` | `@repo/bridge`  | Electron-only IPC abstraction      |
+| `packages/shared` | `@repo/shared`  | Shared types/constants             |
 
 Filter to specific package: `pnpm --filter @repo/desktop <command>`

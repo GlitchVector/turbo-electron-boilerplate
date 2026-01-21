@@ -1,8 +1,8 @@
-import { app, BrowserWindow, ipcMain, dialog } from "electron";
-import { join } from "path";
-import { readFile, writeFile, access } from "fs/promises";
 import { constants } from "fs";
+import { readFile, writeFile, access } from "fs/promises";
+import { join } from "path";
 import { IPC_CHANNELS } from "@repo/shared";
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import { initAutoUpdater, checkForUpdatesOnStartup } from "./updater";
 
 let mainWindow: BrowserWindow | null = null;
@@ -47,12 +47,9 @@ ipcMain.handle(IPC_CHANNELS.FS_READ_FILE, async (_, path: string) => {
   return readFile(path, "utf-8");
 });
 
-ipcMain.handle(
-  IPC_CHANNELS.FS_WRITE_FILE,
-  async (_, path: string, content: string) => {
-    await writeFile(path, content, "utf-8");
-  }
-);
+ipcMain.handle(IPC_CHANNELS.FS_WRITE_FILE, async (_, path: string, content: string) => {
+  await writeFile(path, content, "utf-8");
+});
 
 ipcMain.handle(IPC_CHANNELS.FS_EXISTS, async (_, path: string) => {
   try {
@@ -72,10 +69,7 @@ ipcMain.handle(IPC_CHANNELS.APP_GET_INFO, () => ({
 
 ipcMain.handle(
   IPC_CHANNELS.APP_GET_PATH,
-  (
-    _,
-    name: "home" | "appData" | "userData" | "documents" | "downloads" | "desktop"
-  ) => {
+  (_, name: "home" | "appData" | "userData" | "documents" | "downloads" | "desktop") => {
     return app.getPath(name);
   }
 );

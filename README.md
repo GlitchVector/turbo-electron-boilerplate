@@ -77,8 +77,8 @@ All IPC channels are defined in `@repo/shared/src/ipc.ts`:
 import { IPC_CHANNELS } from "@repo/shared";
 
 // Type-safe channel names
-IPC_CHANNELS.FS_READ_FILE  // "fs:readFile"
-IPC_CHANNELS.APP_GET_INFO  // "app:getInfo"
+IPC_CHANNELS.FS_READ_FILE; // "fs:readFile"
+IPC_CHANNELS.APP_GET_INFO; // "app:getInfo"
 ```
 
 ## Development Workflow
@@ -100,6 +100,7 @@ pnpm changeset
 ```
 
 This will prompt you to:
+
 1. Select which packages have changed
 2. Choose the version bump type (patch/minor/major)
 3. Write a summary of your changes
@@ -109,6 +110,7 @@ The changeset is saved as a markdown file in `.changeset/`.
 ### Version Bumping
 
 When changesets are merged to `main`, a GitHub Action creates a "Version Packages" PR that:
+
 - Bumps versions according to changesets
 - Updates CHANGELOG files
 - Removes the changeset files
@@ -243,6 +245,7 @@ For production releases, you should code sign your app.
 ### Entitlements
 
 Mac entitlements are configured in `apps/desktop/resources/entitlements.mac.plist`. The default configuration allows:
+
 - JIT compilation
 - Unsigned executable memory (required for Electron)
 - Network client access

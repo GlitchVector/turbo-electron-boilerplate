@@ -1,7 +1,7 @@
-import { autoUpdater, UpdateInfo } from "electron-updater";
-import { BrowserWindow, ipcMain } from "electron";
-import log from "electron-log";
 import { IPC_CHANNELS } from "@repo/shared";
+import { type BrowserWindow, ipcMain } from "electron";
+import log from "electron-log";
+import { autoUpdater, type UpdateInfo } from "electron-updater";
 
 // Configure logging
 log.transports.file.level = "info";
@@ -15,7 +15,10 @@ export type UpdateStatus =
   | { type: "checking" }
   | { type: "available"; info: UpdateInfo }
   | { type: "not-available"; info: UpdateInfo }
-  | { type: "downloading"; progress: { percent: number; bytesPerSecond: number; transferred: number; total: number } }
+  | {
+      type: "downloading";
+      progress: { percent: number; bytesPerSecond: number; transferred: number; total: number };
+    }
   | { type: "downloaded"; info: UpdateInfo }
   | { type: "error"; error: string };
 

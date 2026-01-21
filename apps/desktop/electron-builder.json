@@ -6,10 +6,7 @@
     "output": "release",
     "buildResources": "resources"
   },
-  "files": [
-    "dist/**/*",
-    "!dist/renderer/**/*"
-  ],
+  "files": ["dist/**/*", "!dist/renderer/**/*"],
   "extraResources": [
     {
       "from": "../web/out",

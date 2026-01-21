@@ -1,5 +1,5 @@
-import { contextBridge, ipcRenderer } from "electron";
 import { IPC_CHANNELS } from "@repo/shared";
+import { contextBridge, ipcRenderer } from "electron";
 
 // Expose protected methods that allow the renderer process to use
 // ipcRenderer without exposing the entire object
@@ -12,9 +12,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // App info
   getAppInfo: () => ipcRenderer.invoke(IPC_CHANNELS.APP_GET_INFO),
-  getPath: (
-    name: "home" | "appData" | "userData" | "documents" | "downloads" | "desktop"
-  ) => ipcRenderer.invoke(IPC_CHANNELS.APP_GET_PATH, name),
+  getPath: (name: "home" | "appData" | "userData" | "documents" | "downloads" | "desktop") =>
+    ipcRenderer.invoke(IPC_CHANNELS.APP_GET_PATH, name),
 
   // Window controls
   minimize: () => ipcRenderer.send(IPC_CHANNELS.WINDOW_MINIMIZE),
@@ -22,9 +21,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   close: () => ipcRenderer.send(IPC_CHANNELS.WINDOW_CLOSE),
 
   // Dialogs
-  openFileDialog: (options?: {
-    filters?: { name: string; extensions: string[] }[];
-  }) => ipcRenderer.invoke(IPC_CHANNELS.DIALOG_OPEN_FILE, options),
+  openFileDialog: (options?: { filters?: { name: string; extensions: string[] }[] }) =>
+    ipcRenderer.invoke(IPC_CHANNELS.DIALOG_OPEN_FILE, options),
   saveFileDialog: (options?: {
     defaultPath?: string;
     filters?: { name: string; extensions: string[] }[];

@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { AgGridReact } from "ag-grid-react";
+import { API_BASE_URL } from "@repo/shared";
 import { AllCommunityModule, ModuleRegistry, themeQuartz } from "ag-grid-community";
 import type { ColDef } from "ag-grid-community";
-import { API_BASE_URL } from "@repo/shared";
+import { AgGridReact } from "ag-grid-react";
+import { useCallback, useEffect, useState } from "react";
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -48,8 +48,7 @@ export function DataGrid() {
       headerName: "Salary",
       width: 120,
       filter: "agNumberColumnFilter",
-      valueFormatter: (params) =>
-        params.value ? `$${params.value.toLocaleString()}` : "",
+      valueFormatter: (params) => (params.value ? `$${params.value.toLocaleString()}` : ""),
     },
     {
       field: "status",
@@ -64,9 +63,7 @@ export function DataGrid() {
           archived: "bg-red-500/20 text-red-400",
         };
         return (
-          <span
-            className={`rounded px-2 py-0.5 text-xs font-medium ${colors[params.value] || ""}`}
-          >
+          <span className={`rounded px-2 py-0.5 text-xs font-medium ${colors[params.value] || ""}`}>
             {params.value}
           </span>
         );
@@ -86,8 +83,8 @@ export function DataGrid() {
                 params.value >= 70
                   ? "bg-emerald-500"
                   : params.value >= 40
-                    ? "bg-yellow-500"
-                    : "bg-red-500"
+                  ? "bg-yellow-500"
+                  : "bg-red-500"
               }`}
               style={{ width: `${params.value}%` }}
             />
