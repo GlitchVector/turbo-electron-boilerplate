@@ -14,7 +14,8 @@
     "package:linux": "pnpm build:web && pnpm build && electron-builder --linux --config electron-builder.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@repo/shared": "workspace:*",
