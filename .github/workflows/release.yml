@@ -1,0 +1,81 @@
+name: Release Desktop App
+
+on:
+  push:
+    tags:
+      - '@repo/desktop@*'
+
+jobs:
+  release:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            platform: mac
+          - os: ubuntu-latest
+            platform: linux
+          - os: windows-latest
+            platform: win
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Build and Release (macOS)
+        if: matrix.platform == 'mac'
+        run: pnpm --filter @repo/desktop package:mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # For code signing (optional):
+          # CSC_LINK: ${{ secrets.MAC_CERTS }}
+          # CSC_KEY_PASSWORD: ${{ secrets.MAC_CERTS_PASSWORD }}
+          # APPLE_ID: ${{ secrets.APPLE_ID }}
+          # APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Build and Release (Linux)
+        if: matrix.platform == 'linux'
+        run: pnpm --filter @repo/desktop package:linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Release (Windows)
+        if: matrix.platform == 'win'
+        run: pnpm --filter @repo/desktop package:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # For code signing (optional):
+          # WIN_CSC_LINK: ${{ secrets.WIN_CERTS }}
+          # WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CERTS_PASSWORD }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.platform }}
+          path: |
+            apps/desktop/release/*.dmg
+            apps/desktop/release/*.zip
+            apps/desktop/release/*.exe
+            apps/desktop/release/*.AppImage
+            apps/desktop/release/*.deb
+            apps/desktop/release/latest*.yml
+          if-no-files-found: ignore

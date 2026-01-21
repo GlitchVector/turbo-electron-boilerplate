@@ -29,4 +29,16 @@ contextBridge.exposeInMainWorld("electronAPI", {
     defaultPath?: string;
     filters?: { name: string; extensions: string[] }[];
   }) => ipcRenderer.invoke(IPC_CHANNELS.DIALOG_SAVE_FILE, options),
+
+  // Auto-update
+  checkForUpdates: () => ipcRenderer.invoke(IPC_CHANNELS.UPDATE_CHECK),
+  downloadUpdate: () => ipcRenderer.invoke(IPC_CHANNELS.UPDATE_DOWNLOAD),
+  installUpdate: () => ipcRenderer.invoke(IPC_CHANNELS.UPDATE_INSTALL),
+  onUpdateStatus: (callback: (status: unknown) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, status: unknown) => callback(status);
+    ipcRenderer.on(IPC_CHANNELS.UPDATE_STATUS, handler);
+    return () => {
+      ipcRenderer.removeListener(IPC_CHANNELS.UPDATE_STATUS, handler);
+    };
+  },
 });

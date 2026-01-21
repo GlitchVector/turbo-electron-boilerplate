@@ -17,9 +17,16 @@
       "filter": ["**/*"]
     }
   ],
+  "publish": {
+    "provider": "github",
+    "owner": "GITHUB_USERNAME",
+    "repo": "turbo-electron-boilerplate"
+  },
   "mac": {
     "target": ["dmg", "zip"],
-    "category": "public.app-category.productivity"
+    "category": "public.app-category.productivity",
+    "entitlements": "resources/entitlements.mac.plist",
+    "entitlementsInherit": "resources/entitlements.mac.plist"
   },
   "win": {
     "target": ["nsis", "zip"]

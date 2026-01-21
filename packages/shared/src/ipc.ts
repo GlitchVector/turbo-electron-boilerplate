@@ -18,6 +18,12 @@ export const IPC_CHANNELS = {
   // Dialog
   DIALOG_OPEN_FILE: "dialog:openFile",
   DIALOG_SAVE_FILE: "dialog:saveFile",
+
+  // Auto-update
+  UPDATE_CHECK: "update:check",
+  UPDATE_DOWNLOAD: "update:download",
+  UPDATE_INSTALL: "update:install",
+  UPDATE_STATUS: "update:status",
 } as const;
 
 export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS];
@@ -54,4 +60,7 @@ export interface IpcHandlers {
     defaultPath?: string;
     filters?: { name: string; extensions: string[] }[];
   }) => Promise<string | null>;
+  [IPC_CHANNELS.UPDATE_CHECK]: () => Promise<void>;
+  [IPC_CHANNELS.UPDATE_DOWNLOAD]: () => Promise<void>;
+  [IPC_CHANNELS.UPDATE_INSTALL]: () => void;
 }

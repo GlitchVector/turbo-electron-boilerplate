@@ -80,3 +80,164 @@ IPC_CHANNELS.APP_GET_INFO  // "app:getInfo"
 1. **Browser-only development**: Run `pnpm dev:web` and `pnpm dev:api`
 2. **Electron development**: Run `pnpm dev:web` first, then `pnpm dev:desktop`
 3. **Production build**: Run `pnpm build` then `pnpm --filter @repo/desktop package`
+
+## Release Workflow
+
+This boilerplate uses [Changesets](https://github.com/changesets/changesets) for version management and GitHub Actions for automated releases.
+
+### Creating a Changeset
+
+When you make changes that should be released, create a changeset:
+
+```bash
+pnpm changeset
+```
+
+This will prompt you to:
+1. Select which packages have changed
+2. Choose the version bump type (patch/minor/major)
+3. Write a summary of your changes
+
+The changeset is saved as a markdown file in `.changeset/`.
+
+### Version Bumping
+
+When changesets are merged to `main`, a GitHub Action creates a "Version Packages" PR that:
+- Bumps versions according to changesets
+- Updates CHANGELOG files
+- Removes the changeset files
+
+Merging this PR triggers the release workflow.
+
+### Automated Release Process
+
+```
+1. Developer runs: pnpm changeset
+   → Creates .changeset/random-name.md describing changes
+
+2. PR merged to main → version.yml creates "Version Packages" PR
+
+3. Version PR merged → Creates git tag @repo/desktop@X.X.X
+
+4. Tag push triggers release.yml:
+   → Builds for mac/win/linux
+   → Uploads to GitHub Releases (dmg, exe, AppImage + latest-*.yml)
+
+5. User restarts app:
+   → electron-updater fetches latest-mac.yml from GitHub Releases
+   → Compares versions, notifies if update available
+   → User can download & install
+```
+
+### Manual Release
+
+To release manually without GitHub Actions:
+
+```bash
+# 1. Create changeset
+pnpm changeset
+
+# 2. Version packages
+pnpm version
+
+# 3. Build and package
+pnpm --filter @repo/desktop package
+
+# 4. Create GitHub release and upload artifacts
+gh release create @repo/desktop@X.X.X apps/desktop/release/*
+```
+
+## Auto-Update
+
+The desktop app includes auto-update functionality using `electron-updater`.
+
+### How It Works
+
+1. On startup (production only), the app checks GitHub Releases for updates
+2. If an update is available, the renderer is notified via IPC
+3. Users can download and install updates through the UI
+
+### Using the Update Hook
+
+```tsx
+import { useAutoUpdate } from "@repo/bridge";
+
+function UpdateBanner() {
+  const {
+    status,
+    checkForUpdates,
+    downloadUpdate,
+    installUpdate,
+    isUpdateAvailable,
+    isDownloading,
+    isReadyToInstall,
+  } = useAutoUpdate();
+
+  if (status.type === "available") {
+    return (
+      <div>
+        Update available: v{status.version}
+        <button onClick={downloadUpdate}>Download</button>
+      </div>
+    );
+  }
+
+  if (status.type === "downloading") {
+    return <div>Downloading: {status.progress.toFixed(0)}%</div>;
+  }
+
+  if (status.type === "downloaded") {
+    return (
+      <div>
+        Update ready to install
+        <button onClick={installUpdate}>Restart & Install</button>
+      </div>
+    );
+  }
+
+  return null;
+}
+```
+
+### Configuration
+
+Update `apps/desktop/electron-builder.json` with your GitHub repository:
+
+```json
+{
+  "publish": {
+    "provider": "github",
+    "owner": "YOUR_GITHUB_USERNAME",
+    "repo": "YOUR_REPO_NAME"
+  }
+}
+```
+
+## Code Signing (Optional)
+
+For production releases, you should code sign your app.
+
+### macOS
+
+1. Obtain an Apple Developer certificate
+2. Add to GitHub Secrets:
+   - `MAC_CERTS`: Base64-encoded .p12 file
+   - `MAC_CERTS_PASSWORD`: Certificate password
+   - `APPLE_ID`: Your Apple ID
+   - `APPLE_APP_SPECIFIC_PASSWORD`: App-specific password
+   - `APPLE_TEAM_ID`: Your team ID
+
+### Windows
+
+1. Obtain a code signing certificate
+2. Add to GitHub Secrets:
+   - `WIN_CERTS`: Base64-encoded .pfx file
+   - `WIN_CERTS_PASSWORD`: Certificate password
+
+### Entitlements
+
+Mac entitlements are configured in `apps/desktop/resources/entitlements.mac.plist`. The default configuration allows:
+- JIT compilation
+- Unsigned executable memory (required for Electron)
+- Network client access
+- User-selected file access

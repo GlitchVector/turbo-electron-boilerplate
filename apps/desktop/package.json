@@ -1,6 +1,6 @@
 {
   "name": "@repo/desktop",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "main": "dist/main.js",
   "scripts": {
@@ -14,7 +14,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/shared": "workspace:*"
+    "@repo/shared": "workspace:*",
+    "electron-log": "^5.4.3",
+    "electron-updater": "^6.7.3"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",

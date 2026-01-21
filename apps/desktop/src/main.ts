@@ -3,6 +3,7 @@ import { join } from "path";
 import { readFile, writeFile, access } from "fs/promises";
 import { constants } from "fs";
 import { IPC_CHANNELS } from "@repo/shared";
+import { initAutoUpdater, checkForUpdatesOnStartup } from "./updater";
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -126,7 +127,18 @@ ipcMain.handle(
 );
 
 // App lifecycle
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+
+  if (mainWindow) {
+    initAutoUpdater(mainWindow);
+
+    // Check for updates on startup in production
+    if (app.isPackaged) {
+      checkForUpdatesOnStartup();
+    }
+  }
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
