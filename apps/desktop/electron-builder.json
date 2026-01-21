@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  "appId": "com.turboelectron.app",
+  "productName": "Turbo Electron App",
+  "directories": {
+    "output": "release",
+    "buildResources": "resources"
+  },
+  "files": [
+    "dist/**/*",
+    "!dist/renderer/**/*"
+  ],
+  "extraResources": [
+    {
+      "from": "../web/out",
+      "to": "app",
+      "filter": ["**/*"]
+    }
+  ],
+  "mac": {
+    "target": ["dmg", "zip"],
+    "category": "public.app-category.productivity"
+  },
+  "win": {
+    "target": ["nsis", "zip"]
+  },
+  "linux": {
+    "target": ["AppImage", "deb"],
+    "category": "Utility"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@repo/bridge",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3"
+  }
+}
